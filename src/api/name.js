@@ -18,10 +18,11 @@ const getUserList = (data) => {
 }
 
 // 新增用户  user/add
-const getUserAdd = () => {
+const getUserAdd = (data) => {
   return http({
     url: 'user/add',
-    method: 'POST'
+    method: 'POST',
+    data
   })
 }
 
@@ -45,10 +46,11 @@ const getUserDel = (id) => {
 
 // 更新用户
 // PUT /sys/user/update
-const getUserupdata = () => {
+const getUserupdata = (data) => {
   return http({
     url: '/user/update',
-    method: 'PUT'
+    method: 'PUT',
+    data
   })
 }
 

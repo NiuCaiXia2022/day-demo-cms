@@ -21,7 +21,7 @@
           <el-button
             type="primary"
             icon="el-icon-edit"
-            @click="handleUserDialog(add,'')"
+            @click="handleUserDialog('')"
             class="newAdd"
           >
             新增
@@ -48,14 +48,14 @@
             <el-tag
               type="success"
               size="mini"
-              @click="handleUserDialog(edit, scope.row)"
+              @click="handleUserDialog(scope.row)"
             >
               编辑
             </el-tag>
             <el-tag
               type="warning"
               size="mini"
-              @click="handleAssignRoles(scope.$index, scope.row)"
+              @click="handleAssignRoles(scope.row)"
             >
               分配角色
             </el-tag>
@@ -72,7 +72,7 @@
     </div>
 
     <!--  -->
-    <el-dialog title="title" :visible.sync="userDialogVisible">
+    <el-dialog :title="title" :visible.sync="userDialogVisible">
       <el-form
         :model="userDialogForm"
         :rules="rules"
@@ -84,19 +84,37 @@
           <el-input v-model.trim="userDialogForm.avatar"></el-input>
         </el-form-item>
         <el-form-item label="用户名" prop="username">
-          <el-input v-model.trim="userDialogForm.username" placeholder="请输入用户名"></el-input>
+          <el-input
+            v-model.trim="userDialogForm.username"
+            placeholder="请输入用户名"
+          ></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model.trim="userDialogForm.password" placeholder="请输入密码"></el-input>
+          <el-input
+            v-model.trim="userDialogForm.password"
+            placeholder="请输入密码"
+            typeof="password"
+          ></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model.trim="userDialogForm.email" placeholder="请输入邮箱"></el-input>
+          <el-input
+            v-model.trim="userDialogForm.email"
+            placeholder="请输入邮箱"
+          ></el-input>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-input type="textarea" v-model="userDialogForm.status"></el-input>
+          <template slot-scope="scope">
+            <!-- <img class="user-img" :src="scope.row.avatar" alt="" /> -->
+            <el-switch
+              v-model="scope.row.userDialogForm.status"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+            ></el-switch>
+          </template>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('userDialogForm')">
+          <el-button type="primary" @click="handleCloseDialog">
             取消
           </el-button>
           <el-button @click="resetForm('userDialogForm')">确定</el-button>
@@ -120,14 +138,17 @@ export default {
       current: 1, // 当前页码
       size: 20, // 每页条数
       username: '', // 查询的条件
-      title: '',
-      userDialogVisible: false,
+      title: '', // 弹框 标题
+      userDialogVisible: false, // 弹框 显示隐藏
       rules: {
+        // 弹框表单 验证
         username: [
-          { required: true, message: '请输入用户名', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-        ]
+          { required: true, message: '请输入用户名', trigger: 'blur' }
+        ],
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+        email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }]
       },
+      // 弹框表单
       userDialogForm: {
         avatar: '',
         username: '',
@@ -163,7 +184,6 @@ export default {
       }
       this.getUserList(data)
     },
-
     // 点击删除
     handleUserDelete (id) {
       this.$confirm(' 确定删除该条数据麽？', '提示', {
@@ -188,13 +208,55 @@ export default {
     // 分配角色
     handleAssignRoles () {},
     //  点击  新增--编辑
-    handleUserDialog (title, id) {
-
+    handleUserDialog (id) {
+      // console.log('id', typeof (id) === 'object')
+      if (typeof id === 'object') {
+        this.title = '编辑用户'
+        this.handleUserBackfill(id)
+      } else {
+        this.title = '添加用户'
+        this.handleOnAdd()
+      }
+      this.userDialogVisible = true
     },
     // 新增
-    handleOnAdd () {},
+    async handleOnAdd () {
+      const data = this.userDialogForm
+      const res = await Name.getUserAdd(data)
+      console.log('新增', res)
+      this.getUserList()
+    },
+    // 数据回填
+    handleUserBackfill (data) {
+      const obj = (this.userDialogForm = {
+        avatar: data.avatar,
+        username: data.username,
+        password: data.password,
+        email: data.email,
+        status: data.status
+      })
+      this.handleUserEdit(obj)
+    },
     // 编辑
-    handleUserEdit () {}
+    async handleUserEdit (data) {
+      const res = await Name.getUserupdata(data)
+      console.log('编辑', res)
+      this.getUserList()
+    },
+    // 关闭
+    handleCloseDialog () {
+      this.userDialogVisible = false
+    },
+    // 重置
+    handleRestForm () {
+      this.userDialogForm = {
+        avatar: '',
+        username: '',
+        password: '',
+        email: '',
+        status: ''
+      }
+    }
   },
   mounted () {}
 }
