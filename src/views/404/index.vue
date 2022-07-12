@@ -1,6 +1,6 @@
 <template>
-  <div class="content">
-       控制台
+  <div>
+       404
   </div>
 </template>
 <script>

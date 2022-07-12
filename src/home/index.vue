@@ -1,7 +1,7 @@
 <template>
   <div class="home-content">
     <!-- 首页 -->
-    <div>
+    <div class="home-box">
       <el-container>
         <el-aside width="200px">
           <Aside></Aside>
@@ -30,7 +30,9 @@ export default {
   data () {
     return {}
   },
-  created () {},
+  created () {
+    // console.log(this.$router.getRoutes())
+  },
   computed: {},
   methods: {},
   mounted () {}
@@ -41,12 +43,15 @@ export default {
 .home-content {
   width: 100vw;
   height: 100vh;
-  .el-header{
-  background-color: #4ea796;
-  height: 60px;
-}
-.el-main{
-  background-color: #e7ecef;
-}
+
+    .el-header {
+      background-color: #4ea796;
+      height: 60px;
+    }
+    .el-main {
+      background-color: #e7ecef;
+      padding: 20px;
+      height: calc(100vh - 60px);
+    }
 }
 </style>

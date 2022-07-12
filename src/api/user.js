@@ -17,7 +17,34 @@ const getUserLogin = (data) => {
   })
 }
 
+// 退出登录
+const getLogout = () => {
+  return http({
+    url: '/logout',
+    method: 'POST'
+  })
+}
+
+// 用户信息
+const getUserInfo = () => {
+  return http({
+    url: '/user/info',
+    method: 'GET'
+  })
+}
+
+// 菜单  /menu/nav  用户管理
+const getMenuNav = () => {
+  return http({
+    url: '/menu/nav',
+    method: 'GET'
+  })
+}
+
 export default {
   getCaptcha,
-  getUserLogin
+  getUserLogin,
+  getMenuNav,
+  getLogout,
+  getUserInfo
 }

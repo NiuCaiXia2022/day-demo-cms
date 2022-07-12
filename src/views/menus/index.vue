@@ -1,6 +1,6 @@
 <template>
-  <div class="content">
-       控制台
+  <div>
+       菜单管理
   </div>
 </template>
 <script>

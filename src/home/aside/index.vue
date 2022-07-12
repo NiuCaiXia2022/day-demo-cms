@@ -2,6 +2,8 @@
   <div class="content">
     <!-- 左边 -->
 
+    <!-- <i class="el-icon-location"></i> -->
+
     <!-- @open="handleOpen"
       @close="handleClose"
       :collapse="isCollapse" -->
@@ -11,33 +13,36 @@
       background-color="#232d33"
       text-color="#fff"
       active-text-color="#ffd04b"
+      router
+      unique-opened
     >
-      <el-menu-item index="2">
-        <i class="el-icon-menu"></i>
-        <span slot="title">控制台</span>
-      </el-menu-item>
-      <el-submenu index="1">
-        <template slot="title">
-          <i class="el-icon-location"></i>
-          <span slot="title">系统管理</span>
-        </template>
-        <el-menu-item-group>
-          <el-menu-item index="1-1">用户管理</el-menu-item>
-          <el-menu-item index="1-2">角色管理</el-menu-item>
-          <el-menu-item index="1-3">菜单管理</el-menu-item>
-        </el-menu-item-group>
-      </el-submenu>
+      <MenuItem v-for="(item,index) in menuList" :key="index" :menu="item"></MenuItem>
     </el-menu>
   </div>
 </template>
 <script>
+// 菜单组件
+import MenuItem from '../../components/MenuItem'
+// utils 文件  去除空children
+import { filterMenuData } from '../../utils/menulist'
+// utils 文件  处理路由数据
+// import { filterRouter, generateMenus } from '../../utils/menu'
 export default {
   props: {},
-  components: {},
+  components: { MenuItem },
   data () {
-    return {}
+    return {
+      menuList: []
+    }
   },
-  created () {},
+  created () {
+    const data = localStorage.getItem('menus')
+    this.menuList = JSON.parse(data)
+    // 去空
+    filterMenuData(this.menuList)
+    // console.log(' 去空', this.menuList)
+    // 筛选
+  },
   computed: {},
   methods: {},
   mounted () {}

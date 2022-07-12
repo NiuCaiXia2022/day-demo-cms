@@ -5,13 +5,34 @@ import Storage from '../../utils/storage'
 export default {
   namespaced: true,
   state: {
-    token: Storage.getItem('token') || ''
+    token: Storage.getItem('token') || '',
+    userInfo: Storage.getItem('userInfo') || {},
+    // userInfo: {},
+    authoritys: Storage.getItem('authoritys') || '',
+    // authoritys: '',
+    menus: Storage.getItem('menus') || {}
+    // menus: {}
   },
   mutations: {
     // token
     setToken (state, token) {
       state.token = token
       Storage.setItem('token', token)
+    },
+    // 用户信息
+    userInfo (state, userInfo) {
+      state.userInfo = userInfo
+      Storage.setItem('userInfo', userInfo)
+    },
+    //  菜单
+    authoritys (state, authoritys) {
+      state.authoritys = authoritys
+      Storage.setItem('authoritys', authoritys)
+    },
+    // 菜单列表
+    menus (state, menus) {
+      state.menus = menus
+      Storage.setItem('menus', menus)
     }
   },
   actions: {
@@ -21,6 +42,27 @@ export default {
       console.log('登录', response)
       commit('setToken', response)
       // return response
+    },
+    // 退出
+    async getLogout ({ commit }) {
+      const response = await Login.getLogout()
+      // console.log(response)
+      commit('setToken', '')
+      return response
+    },
+    // 用户信息
+    async getUserInfo ({ commit }) {
+      const response = await Login.getUserInfo()
+      console.log('用户信息', response)
+      commit('userInfo', response)
+    },
+    // 菜单
+    async getMenuNav ({ commit }) {
+      const { authoritys, menus } = await Login.getMenuNav()
+      console.log('菜单', authoritys)
+      console.log('菜单列表', menus)
+      commit('authoritys', authoritys)
+      commit('menus', menus)
     }
   }
 

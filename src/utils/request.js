@@ -9,6 +9,12 @@ const instance = axios.create({
 
 // 添加请求拦截器
 instance.interceptors.request.use(function (config) {
+  const token = localStorage.getItem('token')
+  // console.log('请求拦截器', token)
+  if (token) {
+    // config.headers.authorization = token
+    config.headers.token = token
+  }
   // 在发送请求之前做些什么
   return config
 }, function (error) {
@@ -20,7 +26,7 @@ instance.interceptors.request.use(function (config) {
 instance.interceptors.response.use(function (response) {
   // console.log('响应拦截器12', response)
   const { data } = response.data
-  console.log('响应拦截器333', data)
+  // console.log('响应拦截器333', data)
   if (data) {
     return data
   }
