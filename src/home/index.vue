@@ -3,13 +3,13 @@
     <!-- 首页 -->
     <div class="home-box">
       <el-container>
-        <el-aside width="200px">
+        <el-aside @click="handleUserIcon" :width="isStatus?'50px':'200px'" >
           <Aside></Aside>
         </el-aside>
         <el-container>
           <el-container>
             <el-header>
-              <Header></Header>
+              <Header :isStatus="isStatus" @handleUserIcon="handleUserIcon"></Header>
             </el-header>
             <el-main>
               <Main></Main>
@@ -28,13 +28,20 @@ export default {
   props: {},
   components: { Header, Aside, Main },
   data () {
-    return {}
+    return {
+      isStatus: false
+    }
   },
   created () {
     // console.log(this.$router.getRoutes())
   },
   computed: {},
-  methods: {},
+  methods: {
+    // 折叠状态
+    handleUserIcon () {
+      this.isStatus = !this.isStatus
+    }
+  },
   mounted () {}
 }
 </script>

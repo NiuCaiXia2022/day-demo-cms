@@ -11,6 +11,7 @@ export default {
     authoritys: Storage.getItem('authoritys') || '',
     // authoritys: '',
     menus: Storage.getItem('menus') || {}
+    // isStatus: false// 折叠状态
     // menus: {}
   },
   mutations: {
@@ -34,6 +35,10 @@ export default {
       state.menus = menus
       Storage.setItem('menus', menus)
     }
+    // // 折叠状态
+    // icon (state, isStatus) {
+    //   state.isStatus = isStatus
+    // }
   },
   actions: {
     // 登录

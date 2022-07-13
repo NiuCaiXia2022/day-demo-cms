@@ -13,10 +13,15 @@
       background-color="#232d33"
       text-color="#fff"
       active-text-color="#ffd04b"
+      :collapse="isCollapse"
       router
       unique-opened
     >
-      <MenuItem v-for="(item,index) in menuList" :key="index" :menu="item"></MenuItem>
+      <MenuItem
+        v-for="(item, index) in menuList"
+        :key="index"
+        :menu="item"
+      ></MenuItem>
     </el-menu>
   </div>
 </template>
@@ -32,7 +37,8 @@ export default {
   components: { MenuItem },
   data () {
     return {
-      menuList: []
+      menuList: [],
+      isCollapse: false
     }
   },
   created () {
@@ -44,7 +50,8 @@ export default {
     // 筛选
   },
   computed: {},
-  methods: {},
+  methods: {
+  },
   mounted () {}
 }
 </script>

@@ -39,10 +39,24 @@
             <img class="user-img" :src="scope.row.avatar" alt="" />
           </template>
         </el-table-column>
-        <el-table-column prop="address" label="角色"></el-table-column>
+        <el-table-column prop="roles" label="角色">
+          <template slot-scope="scope">
+            <el-tag v-for="(item, index) in scope.row.roles" :key="index">
+              {{ item.name }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="email" label="邮箱"></el-table-column>
         <el-table-column prop="createTime" label="注册时间"></el-table-column>
-        <el-table-column prop="status" label="状态"></el-table-column>
+        <el-table-column prop="status" label="状态">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.status"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+            ></el-switch>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="260">
           <template slot-scope="scope">
             <el-tag
@@ -71,8 +85,8 @@
       </el-table>
     </div>
 
-    <!--  -->
-    <el-dialog :title="title" :visible.sync="userDialogVisible">
+    <!-- 弹框 -->
+    <el-dialog :title="title" :visible.sync="userDialogVisible"  :showClose="false">
       <el-form
         :model="userDialogForm"
         :rules="rules"
@@ -80,8 +94,10 @@
         label-width="100px"
         class="demo-ruleForm"
       >
-        <el-form-item label="头像" prop="avatar">
-          <el-input v-model.trim="userDialogForm.avatar"></el-input>
+        <el-form-item prop="avatar" label="头像">
+          <template slot-scope="scope">
+            <img class="user-img" :src="scope.row.avatar" alt="" />
+          </template>
         </el-form-item>
         <el-form-item label="用户名" prop="username">
           <el-input
@@ -103,11 +119,9 @@
           ></el-input>
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-input type="textarea" v-model="userDialogForm.status"></el-input>
           <template slot-scope="scope">
-            <!-- <img class="user-img" :src="scope.row.avatar" alt="" /> -->
             <el-switch
-              v-model="scope.row.userDialogForm.status"
+              v-model="scope.row.status"
               active-color="#13ce66"
               inactive-color="#ff4949"
             ></el-switch>
@@ -117,7 +131,7 @@
           <el-button type="primary" @click="handleCloseDialog">
             取消
           </el-button>
-          <el-button @click="resetForm('userDialogForm')">确定</el-button>
+          <el-button @click="handelDetermineForm">确定</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -150,7 +164,8 @@ export default {
       },
       // 弹框表单
       userDialogForm: {
-        avatar: '',
+        avatar:
+          'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-5a307996-a7f5-483d-a6f1-6ea9944b0d18/94d8e009-b183-4d54-a389-724181af5362.jpg',
         username: '',
         password: '',
         email: '',
@@ -213,9 +228,10 @@ export default {
       if (typeof id === 'object') {
         this.title = '编辑用户'
         this.handleUserBackfill(id)
+        // this.handleUserBackfill(id)
       } else {
         this.title = '添加用户'
-        this.handleOnAdd()
+        // this.handleOnAdd()
       }
       this.userDialogVisible = true
     },
@@ -225,27 +241,39 @@ export default {
       const res = await Name.getUserAdd(data)
       console.log('新增', res)
       this.getUserList()
+      this.handleRestForm()
     },
     // 数据回填
     handleUserBackfill (data) {
-      const obj = (this.userDialogForm = {
+      this.userDialogForm = {
         avatar: data.avatar,
         username: data.username,
         password: data.password,
         email: data.email,
         status: data.status
-      })
-      this.handleUserEdit(obj)
+      }
     },
     // 编辑
     async handleUserEdit (data) {
       const res = await Name.getUserupdata(data)
       console.log('编辑', res)
       this.getUserList()
+      this.handleRestForm()
     },
+    // 点击确定
+    handelDetermineForm (id) {
+      if (this.title === '编辑用户') {
+        this.handleUserEdit(id)
+      } else if (this.title === '添加用户') {
+        this.handleOnAdd()
+      }
+      this.handleCloseDialog()
+    },
+
     // 关闭
     handleCloseDialog () {
       this.userDialogVisible = false
+      this.handleRestForm()
     },
     // 重置
     handleRestForm () {
@@ -256,6 +284,7 @@ export default {
         email: '',
         status: ''
       }
+      this.handleCloseDialog()
     }
   },
   mounted () {}

@@ -1,16 +1,34 @@
 <template>
   <div class="box">
     <!-- 头部 -->
-    <div class="header-icon" @click="handleHeaderIcon">
-      <i class="el-icon-s-fold" ></i>
-      <!-- <i class="el-icon-s-unfold" ></i> -->
+    <div class="header-icon">
+      <i
+        @click="handleHeaderIcon"
+        :class="isStatus ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
+      ></i>
+      <!-- <i class="el-icon-s-fold"></i> -->
+      <!-- <i class="el-icon-s-unfold" v-else></i> -->
     </div>
     <div class="header-right">
-      <div>
-        <i class="el-icon-s-fold icon right"></i>
+      <div class="header-right-div">
+        <el-tooltip
+          class="item"
+          effect="dark"
+          :content="isIcon?'取消全屏':'开启全屏'"
+          placement="top-start"
+        >
+          <i class="el-icon-files icon right" @click="handleSubmitIcon"></i>
+        </el-tooltip>
       </div>
       <div>
-        <i class="el-icon-s-fold icon right"></i>
+       <el-tooltip
+          class="item"
+          effect="dark"
+          content="关闭全部标签"
+          placement="top-start"
+        >
+        <i class="el-icon-circle-close icon right" @click="handleCloseTab"></i>
+        </el-tooltip>
       </div>
       <div>
         <el-avatar
@@ -21,7 +39,7 @@
       <div class="userCommand right">
         <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
-            {{$store.getters.userInfo.username}}
+            {{ $store.getters.userInfo.username }}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
@@ -35,11 +53,16 @@
 </template>
 <script>
 export default {
-  props: {},
+  props: {
+    isStatus: {
+      type: Boolean,
+      default: false
+    }
+  },
   components: {},
   data () {
     return {
-      isStatus: false
+      isIcon: false
     }
   },
   created () {},
@@ -94,9 +117,25 @@ export default {
       console.log('退出登录', response)
     },
     // 点击折叠按钮
-    handleHeaderIcon () {}
+    handleHeaderIcon () {
+      // this.isStatus = !this.isStatus
+      this.$emit('handleUserIcon', this.isStatus)
+      console.log('header', this.isStatus)
+    },
+    // 点击 全屏图标
+    handleSubmitIcon () {
+      this.isIcon = !this.isIcon
+      // 需要安装插件
+      // console.log('全屏图标2', this.isIcon)
+    },
+    // 点击 删除所有tagview  关闭全部标签
+    handleCloseTab () {
+
+    }
+
   },
-  mounted () {}
+  mounted () {
+  }
 }
 </script>
 
@@ -118,6 +157,10 @@ export default {
     display: flex;
     align-items: center;
     text-align: center;
+    .header-right-div{
+      display: flex;
+     flex-direction:column;
+    }
     .el-dropdown-link {
       color: #fff;
     }
