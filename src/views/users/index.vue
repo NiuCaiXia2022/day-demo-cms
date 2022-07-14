@@ -5,7 +5,12 @@
     <div class="user-from">
       <el-form :inline="true" :model="userFrom" class="demo-form-inline">
         <el-form-item label="用户名">
-          <el-input v-model.trim="userFrom.user" placeholder="请输入用户名"></el-input>
+          <el-input
+            v-model.trim="userFrom.username"
+            placeholder="请输入用户名"
+            clearable
+            @clear="getUserList"
+          ></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="success" icon="el-icon-search" @click="handleOnSubmit">
@@ -24,7 +29,7 @@
     </div>
     <!-- 表格 -->
     <div class="user-table">
-      <el-table :data="userList.records" border style="width: 100%">
+      <el-table :data="userList.records" border style="width: 100%" >
         <el-table-column type="index" width="50" label="序号"></el-table-column>
         <el-table-column prop="username" label="用户名"></el-table-column>
         <el-table-column prop="avatar" label="头像">
@@ -71,32 +76,14 @@
       </el-table>
     </div>
 
-    <!-- 分配角色  弹框-->
-    <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
-      <!-- 表单 -->
-      <el-form
-        :model="ruleForm"
-        :rules="rules"
-        ref="ruleForm"
-        label-width="100px"
-        class="demo-ruleForm"
-      >
-        <el-form-item label="角色" prop="roles">
-          <el-select v-model="ruleForm.roles" placeholder="请选择角色">
-            <el-option v-for="item in ruleFormList" :value="item" :key="item">
-              <el-tag type="info">{{ item }}</el-tag>
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="centerDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
-      </span>
-    </el-dialog>
-
     <!-- 弹框 -->
-    <el-dialog :title="title" :visible.sync="userDialogVisible" :showClose="false">
+    <el-dialog
+      :title="title"
+      :visible.sync="userDialogVisible"
+      :showClose="false"
+      center
+      width="30%"
+    >
       <el-form
         :model="userDialogForm"
         :rules="rules"
@@ -105,7 +92,7 @@
         class="demo-ruleForm"
       >
         <el-form-item prop="avatar" label="头像">
-          <img :src="userDialogForm.avatar" class="dialog-img" />
+          <el-avatar :size="70" :src="userDialogForm.avatar"></el-avatar>
         </el-form-item>
         <el-form-item label="用户名" prop="username">
           <el-input
@@ -127,13 +114,10 @@
           ></el-input>
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.status"
-              active-color="#13ce66"
-              inactive-color="#ff4949"
-            ></el-switch>
-          </template>
+          <el-radio-group v-model="userDialogForm.status">
+            <el-radio :label="1">启用</el-radio>
+            <el-radio :label="2">禁用</el-radio>
+          </el-radio-group>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleCloseDialog"> 取消 </el-button>
@@ -142,16 +126,51 @@
       </el-form>
     </el-dialog>
 
+    <!-- 分配角色  弹框-->
+    <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
+      <!-- 表单 -->
+      <el-form
+        :model="ruleForm"
+        :rules="rules"
+        ref="ruleForm"
+        label-width="100px"
+        class="demo-ruleForm"
+      >
+        <el-form-item label="角色" prop="roles">
+          <el-select v-model="ruleForm.roles" placeholder="请选择角色">
+            <el-option
+              v-for="item in ruleFormList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+              <el-tag type="info">{{ item }}</el-tag>
+            </el-option>
+            <el-option v-for="item in ruleFormList" :value="item" :key="item">
+              <el-tag type="info">{{ item }}</el-tag>
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
     <!-- 分页 -->
-    <!-- <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="currentPage4"
-      :page-sizes="[5, 10, 15, 20]"
-      :page-size="100"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="400">
-    </el-pagination> -->
+    <div class="footer">
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="current"
+        :page-sizes="[2, 5, 10]"
+        :page-size="size"
+        layout="jumper, prev, pager, next, sizes,  total"
+        :total="total"
+      >
+      </el-pagination>
+    </div>
   </div>
 </template>
 <script>
@@ -164,10 +183,11 @@ export default {
       userList: [], // 表格
       userFrom: {
         // 表单
-        user: ''
+        username: ''
       },
       current: 1, // 当前页码
-      size: 20, // 每页条数
+      size: 2, // 每页条数
+      total: 0,
       username: '', // 查询的条件
       title: '', // 弹框 标题
       userDialogVisible: false, // 弹框 显示隐藏
@@ -184,7 +204,7 @@ export default {
         username: '',
         password: '',
         email: '',
-        status: ''
+        status: 1
       },
       // 分配角色  弹框
       centerDialogVisible: false,
@@ -204,21 +224,16 @@ export default {
       const data = {
         current: this.current,
         size: this.size,
-        username: this.username
+        username: this.userFrom.username
       }
       const res = await Name.getUserList(data)
-      // console.log(res)
+      console.log('列表数据', res)
       this.userList = res
+      this.total = res.total
     },
     // 点击查询
     handleOnSubmit() {
-      this.username = this.userFrom.user
-      const data = {
-        current: this.current,
-        size: this.size,
-        username: this.username
-      }
-      this.getUserList(data)
+      this.getUserList()
     },
     // 点击删除
     handleUserDelete(id) {
@@ -340,6 +355,16 @@ export default {
     // 状态修改
     hanldeUserStatus(status) {
       console.log('状态修改', status)
+    },
+    // 页码
+    handleSizeChange(size) {
+      this.size = size
+      this.getUserList()
+    },
+    // 页数
+    handleCurrentChange(change) {
+      this.current = change
+      this.getUserList()
     }
   },
   mounted() {}
@@ -350,7 +375,8 @@ export default {
 .user-box {
   width: 100%;
   height: 100%;
-  padding: 20px;
+  margin-left: 20px;
+  margin-top: 20px;
   // .user-from {
 
   // }
@@ -363,11 +389,14 @@ export default {
     cursor: pointer;
   }
 }
-.dialog-img {
-  width: 50px;
-  height: 50px;
-}
 .el-tag {
   cursor: pointer;
+}
+.footer {
+  float: right;
+  padding-right: 25px;
+}
+.user-table {
+    width: 1145px;
 }
 </style>

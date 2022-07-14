@@ -16,6 +16,8 @@
             icon="el-icon-edit"
             @click="handleRolesDialog('')"
             class="newAdd"
+            clearable
+            @clear="getRolesList"
           >
             新增
           </el-button>
@@ -83,8 +85,8 @@
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="rolesDialogForm.status">
-            <el-radio label="启用"  value="1"></el-radio>
-            <el-radio label="禁用"  value="2"></el-radio>
+            <el-radio :label="1" value="1">启用</el-radio>
+            <el-radio :label="2" value="2">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item>
@@ -93,6 +95,19 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <!-- 分页 -->
+    <div class="footer">
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="current"
+        :page-sizes="[2, 5, 10]"
+        :page-size="size"
+        layout="jumper, prev, pager, next, sizes"
+      >
+      </el-pagination>
+    </div>
   </div>
 </template>
 <script>
@@ -124,7 +139,7 @@ export default {
         name: '',
         code: '',
         remark: '',
-        status: ''
+        status: 1
       }
     }
   },
@@ -181,12 +196,20 @@ export default {
     handleAssignRoles() {},
     // 点击 添加、编辑
     handleRolesDialog(id) {
-      if (typeof id === 'object') {
-        this.title = '编辑角色'
-        this.handleRolesrBackfill(id)
-      } else {
-        this.title = '新增角色'
-      }
+      this.$refs.rolesDialogForm.validate((valid) => {
+        if (valid) {
+          if (typeof id === 'object') {
+            this.title = '编辑角色'
+            this.handleRolesrBackfill(id)
+          } else {
+            this.title = '新增角色'
+          }
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+
       this.rolesDialogVisible = true // 弹出框
     },
     //  新增
@@ -207,7 +230,7 @@ export default {
         name: data.name,
         code: data.code,
         remark: data.remark,
-        status: data.status
+        status: 1
       }
     },
     // 编辑
@@ -216,10 +239,8 @@ export default {
         const res = await Roles.getRleupdata(data)
         console.log('编辑', res)
         this.getRolesList()
-        // this.handleRestForm()
-      } catch (error) {
-        this.$message.success('编辑成功')
-      }
+        this.handleRestForm()
+      } catch (error) {}
     },
     // 点击确定
     handelDetermineForm(id) {
@@ -243,6 +264,16 @@ export default {
     // 状态修改
     mounted() {
       console.log('状态修改', status)
+    },
+    // 页码
+    handleSizeChange(size) {
+      this.size = size
+      this.getRolesList()
+    },
+    // 页数
+    handleCurrentChange(change) {
+      this.current = change
+      this.getRolesList()
     }
   }
 }
@@ -252,9 +283,19 @@ export default {
 .roles-box {
   width: 100%;
   height: 100%;
-  padding: 20px;
+  padding-top: 20px;
 }
 .el-tag {
   cursor: pointer;
+}
+.roles-from {
+  padding-left: 20px;
+}
+.el-table {
+  width: 1145px;
+}
+.footer {
+  float: right;
+  padding-right: 25px;
 }
 </style>

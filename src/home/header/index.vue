@@ -3,28 +3,14 @@
     <!-- 头部 -->
     <div class="header-icon">
       <div class="header-icon-children">
-        <!-- <i
-          @click="handleHeaderIcon"
-          :class="isStatus ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
-        ></i> -->
         <i
           @click="handleHeaderIcon"
           :class="$store.getters.isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
         ></i>
-        <!-- <el-button @click="handleCollapseMenu" size="mini" type="text" :icon="$store.getters.isCollapse ? 'el-icon-s-fold' : 'el-icon-s-unfold'"></el-button> -->
       </div>
       <div class="header-closable">
         <Tags></Tags>
-        <!-- <el-tag type="warning" label="标签五" effect="plain" >
-          控制台
-        </el-tag>
-         <el-tag type="warning" label="标签五" effect="plain"  closable>
-          控制台
-        </el-tag> -->
       </div>
-
-      <!-- <i class="el-icon-s-fold"></i> -->
-      <!-- <i class="el-icon-s-unfold" v-else></i> -->
     </div>
     <div class="header-right">
       <div class="header-right-div">
@@ -44,7 +30,11 @@
           content="关闭全部标签"
           placement="top-start"
         >
-          <i class="el-icon-circle-close icon right" @click="handleCloseTab"></i>
+          <i
+            class="el-icon-circle-close icon right fullscreen"
+            @click="handleCloseTab"
+          ></i>
+          <!-- <svg-icon icon-class="fullscreen" class="fullscreen" + @click="handleCloseTab" /> -->
         </el-tooltip>
       </div>
       <div>
@@ -135,15 +125,10 @@ export default {
       const response = await this.$store.dispatch('user/getLogout')
       console.log('退出登录', response)
     },
-    // 点击折叠按钮
-    // handleHeaderIcon() {
-    //   // this.isStatus = !this.isStatus
-    //   this.$emit('handleUserIcon', this.isStatus)
-    //   console.log('header', this.isStatus)
-    // },
     // 点击 全屏图标
     handleSubmitIcon() {
       this.isIcon = !this.isIcon
+      // screenfull.toggle()
       // 需要安装插件
       // console.log('全屏图标2', this.isIcon)
     },
@@ -206,13 +191,13 @@ export default {
     }
   }
   .full {
-        margin-right: 20px;
-        // 旋转
-        transform: rotate(20deg);
-        -webkit-transform: rotate(20deg);
-        /*兼容-webkit-引擎浏览器*/
-        -moz-transform: rotate(20deg);
-        /*兼容-moz-引擎浏览器*/
-      }
+    margin-right: 20px;
+    // 旋转
+    transform: rotate(20deg);
+    -webkit-transform: rotate(20deg);
+    /*兼容-webkit-引擎浏览器*/
+    -moz-transform: rotate(20deg);
+    /*兼容-moz-引擎浏览器*/
+  }
 }
 </style>

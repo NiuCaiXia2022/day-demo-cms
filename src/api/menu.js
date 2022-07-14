@@ -25,9 +25,9 @@ const getMenuAdd = () => {
 
 // 删除菜单
 // DELETE /sys/menu/del/{id}
-const getMenuDel = () => {
+const getMenuDel = (id) => {
   return http({
-    url: '/menu/del/{id}',
+    url: `/menu/del/${id}`,
     method: 'DELETE'
   })
 }
