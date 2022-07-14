@@ -34,9 +34,9 @@ const getRoleDel = (id) => {
 
 // 单个角色信息和已有权限信息
 // GET /sys/role/info/{id}
-const getRoleInfo = () => {
+const getRoleInfo = (id) => {
   return http({
-    url: '/role/info/{id}',
+    url: `/role/info/${id}`,
     method: 'GET'
   })
 }

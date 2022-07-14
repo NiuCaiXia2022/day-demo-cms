@@ -27,9 +27,10 @@
         </el-form-item>
       </el-form>
     </div>
+
     <!-- 表格 -->
     <div class="user-table">
-      <el-table :data="userList.records" border style="width: 100%" >
+      <el-table :data="userList.records" border style="width: 100%">
         <el-table-column type="index" width="50" label="序号"></el-table-column>
         <el-table-column prop="username" label="用户名"></el-table-column>
         <el-table-column prop="avatar" label="头像">
@@ -104,7 +105,8 @@
           <el-input
             v-model.trim="userDialogForm.password"
             placeholder="请输入密码"
-            typeof="password"
+            type="password"
+            show-password
           ></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
@@ -120,14 +122,28 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleCloseDialog"> 取消 </el-button>
+          <el-button type="primary" @click="userDialogVisible = false"> 取消 </el-button>
           <el-button @click="handelDetermineForm">确定</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
 
+    <!-- 分页 -->
+    <div class="footer">
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="current"
+        :page-sizes="[2, 5, 10]"
+        :page-size="size"
+        layout="jumper, prev, pager, next, sizes,  total"
+        :total="total"
+      >
+      </el-pagination>
+    </div>
+
     <!-- 分配角色  弹框-->
-    <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
+    <el-dialog title="提示" :visible.sync="RolesDialogVisible" width="30%" center>
       <!-- 表单 -->
       <el-form
         :model="ruleForm"
@@ -153,52 +169,31 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="centerDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
+        <el-button @click="RolesDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="eolesDialogVisible = false">确 定</el-button>
       </span>
     </el-dialog>
-
-    <!-- 分页 -->
-    <div class="footer">
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="current"
-        :page-sizes="[2, 5, 10]"
-        :page-size="size"
-        layout="jumper, prev, pager, next, sizes,  total"
-        :total="total"
-      >
-      </el-pagination>
-    </div>
   </div>
 </template>
 <script>
 import Name from '../../api/name'
+import Roles from '../../api/roles'
 export default {
   props: {},
   components: {},
   data() {
     return {
-      userList: [], // 表格
+      // 表单
       userFrom: {
-        // 表单
         username: ''
       },
-      current: 1, // 当前页码
-      size: 2, // 每页条数
-      total: 0,
-      username: '', // 查询的条件
-      title: '', // 弹框 标题
-      userDialogVisible: false, // 弹框 显示隐藏
-      rules: {
-        // 弹框表单 验证
-        username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-        email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }]
-      },
-      // 弹框表单
+      // 表格
+      userList: [],
+      title: '',
+      // 弹框
+      userDialogVisible: false, // 显示隐藏
       userDialogForm: {
+        // 弹框--表单
         avatar:
           'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-5a307996-a7f5-483d-a6f1-6ea9944b0d18/94d8e009-b183-4d54-a389-724181af5362.jpg',
         username: '',
@@ -206,16 +201,26 @@ export default {
         email: '',
         status: 1
       },
+      rules: {
+        //  弹框表单--角色表单公用 验证
+        username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+        email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
+        roles: [{ required: true, message: '请输入角色', trigger: 'blur' }]
+      },
       // 分配角色  弹框
-      centerDialogVisible: false,
-      //  分配角色  表单
+      RolesDialogVisible: false, // 显示隐藏
       ruleForm: {},
-      // 分配角色 options
-      ruleFormList: []
+      ruleFormList: [], // 分配角色 角色列表
+      // 分页
+      total: 0, // 总条数
+      size: 5, // 每页条数
+      current: 1 // 当前页码
     }
   },
   created() {
     this.getUserList()
+    this.handleGetRoleList()
   },
   computed: {},
   methods: {
@@ -227,9 +232,20 @@ export default {
         username: this.userFrom.username
       }
       const res = await Name.getUserList(data)
-      console.log('列表数据', res)
+      // console.log('列表数据', res)
       this.userList = res
       this.total = res.total
+    },
+    // 角色列表
+    async handleGetRoleList() {
+      try {
+        const data = { current: this.current, size: this.size }
+        const response = await Roles.getRoleList(data)
+        console.log('角色列表', response)
+        this.ruleFormList = response.records
+      } catch (e) {
+        console.log(e)
+      }
     },
     // 点击查询
     handleOnSubmit() {
@@ -257,106 +273,7 @@ export default {
           })
         })
     },
-    // 分配角色 拿数据
-    handleDistributionRoles(data) {
-      this.centerDialogVisible = true
-      // this.ruleFormList = data.roles
-      // console.log('分配角色', data)
-      data.roles.forEach((item) => {
-        console.log('分配角色', item)
-        this.ruleFormList.push(item.name)
-      })
-      // console.log(this.ruleFormList)
-      this.hsndleUserRoles(data.id)
-    },
-    // 分配角色 点击确定
-    async hsndleUserRoles(id) {
-      try {
-        const res = await Name.getUserAssign(id)
-        console.log('分配角色', res)
-        this.getUserList()
-      } catch (error) {
-        console.log(error)
-      }
-    },
-    //  点击  新增--编辑
-    handleUserDialog(id) {
-      // console.log('id', typeof (id) === 'object')
-      // console.log('id', id)
-      if (typeof id === 'object') {
-        this.title = '编辑用户'
-        this.handleUserBackfill(id)
-      } else {
-        this.title = '添加用户'
-      }
-      this.userDialogVisible = true // 弹出框
-    },
-    // 新增
-    async handleOnAdd() {
-      try {
-        // this.userDialogForm.avatar = 'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-5a307996-a7f5-483d-a6f1-6ea9944b0d18/94d8e009-b183-4d54-a389-724181af5362.jpg'
-        const data = this.userDialogForm
-        console.log('新增', this.userDialogForm)
-        const res = await Name.getUserAdd(data)
-        console.log('新增', res)
-        this.getUserList()
-        this.handleRestForm()
-      } catch (error) {
-        console.log(error)
-      }
-    },
-    // 数据回填
-    handleUserBackfill(data) {
-      // console.log('数据回填', data)
-      this.userDialogForm = {
-        avatar: data.avatar,
-        username: data.username,
-        password: data.password,
-        email: data.email,
-        status: data.status
-      }
-    },
-    // 编辑
-    async handleUserEdit(data) {
-      try {
-        const res = await Name.getUserupdata(data)
-        console.log('编辑', res)
-        this.getUserList()
-        this.handleRestForm()
-      } catch (error) {
-        this.$message.success('编辑成功')
-      }
-    },
-    // 点击确定
-    handelDetermineForm(id) {
-      if (this.title === '编辑用户') {
-        this.handleUserEdit(id)
-      } else if (this.title === '添加用户') {
-        this.handleOnAdd()
-      }
-      this.handleCloseDialog()
-    },
-    //  点击取消
-    handleCloseDialog() {
-      this.userDialogVisible = false
-      this.handleRestForm()
-    },
-    // 重置
-    handleRestForm() {
-      this.$refs.userDialogForm.resetFields()
-      // this.userDialogForm = {
-      //   avatar: '',
-      //   username: '',
-      //   password: '',
-      //   email: '',
-      //   status: ''
-      // }
-    },
-    // 状态修改
-    hanldeUserStatus(status) {
-      console.log('状态修改', status)
-    },
-    // 页码
+    // 每页条数
     handleSizeChange(size) {
       this.size = size
       this.getUserList()
@@ -365,6 +282,71 @@ export default {
     handleCurrentChange(change) {
       this.current = change
       this.getUserList()
+    },
+    // 点击按钮  增加、编辑
+    handleUserDialog(id) {
+      // console.log('点击按钮  增加、编辑', id)
+      if (typeof id === 'object') {
+        this.title = '编辑用户'
+        this.handleUserBackfill(id)
+      } else {
+        this.title = '添加用户'
+      }
+      this.userDialogVisible = true
+    },
+    // 数据回填
+    async handleUserBackfill(id) {
+      const res = await Name.getUseruserInfo(id.id)
+      // console.log('数据回填2', res)
+      this.userDialogForm = res
+    },
+    // 表格 状态按钮
+    hanldeUserStatus() {},
+    // 确定
+    handelDetermineForm() {
+      this.$refs.userDialogForm.validate((valid) => {
+        if (valid) {
+          if (this.title === '编辑用户') {
+            this.handleUserEdit()
+          } else {
+            this.handleUserAdd()
+          }
+        }
+      })
+    },
+    // 编辑
+    async handleUserEdit() {
+      console.log('编辑', this.userDialogForm)
+      const res = await Name.getUserupdata(this.userDialogForm)
+      console.log('编辑', res)
+      this.getUserList()
+      this.$notify({
+        title: '提示',
+        message: '编辑用户成功',
+        type: 'success'
+      })
+      this.handleCloseDialog() // 关闭弹窗
+      this.$refs.userDialogForm.resetFields() // 重置
+      // console.log('编辑', this.$refs.userDialogForm.resetFields())
+    },
+    // 添加
+    async handleUserAdd() {
+      try {
+        await Name.getUserAdd()
+        this.handleCloseDialog() // 关闭弹窗
+        this.$notify({
+          title: '提示',
+          message: '添加用户成功',
+          type: 'success'
+        })
+        this.$refs.userDialogForm.resetFields() // 重置
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 确定 分配角色
+    handleDistributionRoles() {
+      this.RolesDialogVisible = true
     }
   },
   mounted() {}
@@ -397,6 +379,6 @@ export default {
   padding-right: 25px;
 }
 .user-table {
-    width: 1145px;
+  width: 1145px;
 }
 </style>

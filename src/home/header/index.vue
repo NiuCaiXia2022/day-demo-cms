@@ -17,10 +17,11 @@
         <el-tooltip
           class="item"
           effect="dark"
-          :content="isIcon ? '取消全屏' : '开启全屏'"
+          :content="isFullscreenTxt"
           placement="top-start"
         >
-          <i class="el-icon-rank icon right full" @click="handleSubmitIcon"></i>
+          <!-- <i class="el-icon-rank icon right full" @click="handleSubmitIcon"></i> -->
+          <i class="el-icon-rank icon right full" @click="toggleScreen"></i>
         </el-tooltip>
       </div>
       <div>
@@ -34,7 +35,6 @@
             class="el-icon-circle-close icon right fullscreen"
             @click="handleCloseTab"
           ></i>
-          <!-- <svg-icon icon-class="fullscreen" class="fullscreen" + @click="handleCloseTab" /> -->
         </el-tooltip>
       </div>
       <div>
@@ -57,6 +57,8 @@
 </template>
 <script>
 import Tags from '../../components/Tags'
+// 全屏
+import screenfull from 'screenfull'
 export default {
   props: {
     isStatus: {
@@ -67,7 +69,9 @@ export default {
   components: { Tags },
   data() {
     return {
-      isIcon: false
+      isIcon: false,
+      isFullscreen: false,
+      isFullscreenTxt: '全屏'
     }
   },
   created() {},
@@ -126,12 +130,12 @@ export default {
       console.log('退出登录', response)
     },
     // 点击 全屏图标
-    handleSubmitIcon() {
-      this.isIcon = !this.isIcon
-      // screenfull.toggle()
-      // 需要安装插件
-      // console.log('全屏图标2', this.isIcon)
+    toggleScreen() {
+      screenfull.toggle()
+      this.isFullscreen = !this.isFullscreen
+      this.isFullscreenTxt = this.isFullscreen === false ? '全屏' : '取消全屏'
     },
+
     // 点击 删除所有tagview  关闭全部标签
     handleCloseTab() {}
   },

@@ -16,9 +16,9 @@ const get = () => {
 
 // 新增菜单
 // POST /sys/menu/add
-const getMenuAdd = () => {
+const getMenuAdd = (data) => {
   return http({
-    url: '/menu/add',
+    url: `/menu/list?current=${data.current}&size=${data.size}&username=${data.username}`,
     method: 'POST'
   })
 }

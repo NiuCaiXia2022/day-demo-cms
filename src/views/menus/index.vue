@@ -162,7 +162,7 @@
       </el-form>
     </el-dialog>
 
-      <!-- 分页 -->
+    <!-- 分页 -->
     <div class="footer">
       <el-pagination
         @size-change="handleSizeChange"
@@ -230,11 +230,11 @@ export default {
         username: this.username
       }
       const res = await Menus.getMenuList(data)
-      console.log('菜单列表数据1', res)
+      // console.log('菜单列表数据1', res)
       res.forEach((item) => {
         this.menusList.push(item)
       })
-      console.log('菜单列表数据3', this.menusList)
+      // console.log('菜单列表数据3', this.menusList)
     },
     // 查询
     handleOnSubmit() {
@@ -297,6 +297,18 @@ export default {
         this.$message.success('编辑成功')
       }
     },
+    // 添加
+    async handleOnAdd() {
+      try {
+        const data = this.rolesDialogForm
+        const res = await Menus.getMenuAdd(data)
+        console.log('新增', res)
+        this.getRolesList()
+        this.handleRestForm()
+      } catch (error) {
+        console.log(error)
+      }
+    },
     // 点击确定
     handelDetermineForm(id) {
       if (this.title === '编辑角色') {
@@ -308,7 +320,7 @@ export default {
     },
     //  点击取消
     handleCloseDialog() {
-      this.rolesDialogVisible = false
+      this.menusDialogVisible = false
       this.handleRestForm()
     },
     // 重置
@@ -339,13 +351,13 @@ export default {
   padding-top: 20px;
   padding-left: 20px;
 }
-.menus-from{
+.menus-from {
   padding-left: 20px;
 }
 .el-tag {
   cursor: pointer;
 }
 .user-table {
-    width: 1145px;
+  width: 1145px;
 }
 </style>

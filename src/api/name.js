@@ -65,9 +65,9 @@ const getUserupUserPwd = (data) => {
 
 // 单个用户信息
 // GET /sys/user/userInfo/{id}
-const getUseruserInfo = () => {
+const getUseruserInfo = (id) => {
   return http({
-    url: '/user/userInfo/{id}',
+    url: `/user/userInfo/${id}`,
     method: 'GET'
   })
 }

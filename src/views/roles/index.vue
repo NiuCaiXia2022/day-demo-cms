@@ -157,7 +157,7 @@ export default {
         name: this.name
       }
       const res = await Roles.getRoleList(data)
-      console.log('列表数据', res)
+      // console.log('列表数据', res)
       this.rolesList = res
     },
     //  查询
