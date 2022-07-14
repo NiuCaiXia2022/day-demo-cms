@@ -8,8 +8,11 @@ import './permission'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
-Vue.use(ElementUI)
+// 菜单插件
+import Fragment from 'vue-fragment'
 
+Vue.use(ElementUI)
+Vue.use(Fragment.Plugin)
 Vue.config.productionTip = false
 
 new Vue({

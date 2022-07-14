@@ -39,7 +39,7 @@
             class="login-button"
             @click="handleVerification"
           >
-            {{ loadingStatus ? '登陆中···' : '登录' }}
+            {{ loadingStatus ? "登陆中···" : "登录" }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -51,7 +51,7 @@ import Login from '../../api/user'
 export default {
   props: {},
   components: {},
-  data () {
+  data() {
     return {
       // 表单
       loginForm: {
@@ -73,20 +73,20 @@ export default {
       loginImg: ''
     }
   },
-  created () {
+  created() {
     this.handleLoginToken()
   },
   computed: {},
   methods: {
     // 默认请求 token
-    async handleLoginToken () {
+    async handleLoginToken() {
       const res = await Login.getCaptcha()
       // console.log('默认请求',res)
       this.loginImg = res.captchaImg
       this.loginForm.token = res.token
     },
     // 点击登录
-    handleVerification () {
+    handleVerification() {
       this.$refs.ruleLoginForm.validate((valid) => {
         if (!valid) return
         if (valid) {
@@ -97,7 +97,7 @@ export default {
       this.loadingStatus = true
     },
     // 登录请求
-    async handleGetLogin (from) {
+    async handleGetLogin(from) {
       try {
         // console.log('登录请求', from)
         await this.$store.dispatch('user/getLogin', from)
@@ -121,8 +121,8 @@ export default {
       }
     }
   },
-  mounted () {
-    this.getMenuList()
+  mounted() {
+    // this.getMenuList()
   }
 }
 </script>

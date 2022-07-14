@@ -28,7 +28,7 @@ const getUserAdd = (data) => {
 
 // 分配角色
 // POST /sys/user/assign/{userId}
-const getUserAssign = (data) => {
+const getUserAssign = (id) => {
   return http({
     url: '/user/assign/{userId}',
     method: 'POST'

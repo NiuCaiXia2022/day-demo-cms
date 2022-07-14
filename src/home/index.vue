@@ -3,7 +3,8 @@
     <!-- 首页 -->
     <div class="home-box">
       <el-container>
-        <el-aside @click="handleUserIcon" :width="isStatus?'50px':'200px'" >
+        <!-- <el-aside @click="handleUserIcon" :width="isStatus ? '50px' : '200px'"> -->
+        <el-aside width="auto">
           <Aside></Aside>
         </el-aside>
         <el-container>
@@ -27,22 +28,22 @@ import Main from './main'
 export default {
   props: {},
   components: { Header, Aside, Main },
-  data () {
+  data() {
     return {
       isStatus: false
     }
   },
-  created () {
+  created() {
     // console.log(this.$router.getRoutes())
   },
   computed: {},
   methods: {
     // 折叠状态
-    handleUserIcon () {
+    handleUserIcon() {
       this.isStatus = !this.isStatus
     }
   },
-  mounted () {}
+  mounted() {}
 }
 </script>
 
@@ -51,14 +52,18 @@ export default {
   width: 100vw;
   height: 100vh;
 
-    .el-header {
-      background-color: #4ea796;
-      height: 60px;
-    }
-    .el-main {
-      background-color: #e7ecef;
-      padding: 20px;
-      height: calc(100vh - 60px);
-    }
+  .el-aside {
+    transition: all 1s;
+  }
+
+  .el-header {
+    background-color: #4ea796;
+  }
+
+  .el-main {
+    background-color: #e7ecef;
+    padding: 20px;
+    height: calc(100vh - 60px);
+  }
 }
 </style>

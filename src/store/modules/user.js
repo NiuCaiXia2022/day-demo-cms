@@ -53,6 +53,9 @@ export default {
       const response = await Login.getLogout()
       // console.log(response)
       commit('setToken', '')
+      commit('userInfo', '')
+      commit('authoritys', '')
+      commit('menus', '')
       return response
     },
     // 用户信息

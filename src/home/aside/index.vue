@@ -8,20 +8,18 @@
       @close="handleClose"
       :collapse="isCollapse" -->
     <el-menu
-      default-active="1"
+      :style="{ width: $store.getters.isCollapse ? '60px' : '200px' }"
+      :default-active="activePath"
       class="el-menu-vertical-demo"
       background-color="#232d33"
       text-color="#fff"
       active-text-color="#ffd04b"
       :collapse="isCollapse"
+      :collapse-transition="false"
       router
       unique-opened
     >
-      <MenuItem
-        v-for="(item, index) in menuList"
-        :key="index"
-        :menu="item"
-      ></MenuItem>
+      <MenuItem v-for="(item, index) in menuList" :key="index" :menu="item"></MenuItem>
     </el-menu>
   </div>
 </template>
@@ -35,13 +33,13 @@ import { filterMenuData } from '../../utils/menulist'
 export default {
   props: {},
   components: { MenuItem },
-  data () {
+  data() {
     return {
-      menuList: [],
-      isCollapse: false
+      menuList: []
+      // isCollapse: false
     }
   },
-  created () {
+  created() {
     const data = localStorage.getItem('menus')
     this.menuList = JSON.parse(data)
     // 去空
@@ -49,17 +47,22 @@ export default {
     // console.log(' 去空', this.menuList)
     // 筛选
   },
-  computed: {},
-  methods: {
+  computed: {
+    activePath() {
+      return this.$route.path
+    },
+    isCollapse() {
+      return this.$store.getters.isCollapse
+    }
   },
-  mounted () {}
+  methods: {},
+  mounted() {}
 }
 </script>
 
 <style lang="scss" scoped>
 .content {
   height: 100vh;
-  width: 200px;
   background-color: #232d33;
   .el-menu-vertical-demo {
     border: none !important;

@@ -1,20 +1,21 @@
 <template>
-  <span>
-      <el-menu-item :index="item.path"  v-if="!item.children||item.children.length<=0">
-        <i class="el-icon-location"></i>
+  <fragment>
+    <!-- {{item.icon}} -->
+    <el-menu-item :index="item.path" v-if="!item.children || item.children.length <= 0">
+      <i :class="'el-icon-' + item.icon"></i>
+      <span>{{ item.label }}</span>
+    </el-menu-item>
+    <el-submenu :index="item.path" v-else>
+      <template slot="title">
+        <i :class="'el-icon-' + item.icon"></i>
         <span>{{ item.label }}</span>
-      </el-menu-item>
-         <el-submenu :index="item.path" v-else>
-        <template slot="title">
-          <i class="el-icon-location"></i>
-          <span>{{ item.label }}</span>
-        </template>
-         <el-menu-item :index="tree.path"  v-for="tree in item.children" :key="tree.id">
-        <i class="el-icon-location"></i>
+      </template>
+      <el-menu-item :index="tree.path" v-for="tree in item.children" :key="tree.id">
+        <i :class="'el-icon-' + tree.icon"></i>
         <span>{{ tree.label }}</span>
       </el-menu-item>
-         </el-submenu>
-  </span>
+    </el-submenu>
+  </fragment>
 </template>
 <script>
 export default {
@@ -25,17 +26,17 @@ export default {
     }
   },
   components: {},
-  data () {
+  data() {
     return {
       item: this.menu
     }
   },
-  created () {
+  created() {
     console.log('1', this.item)
   },
   computed: {},
   methods: {},
-  mounted () {}
+  mounted() {}
 }
 </script>
 

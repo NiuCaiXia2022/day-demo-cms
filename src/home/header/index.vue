@@ -2,10 +2,27 @@
   <div class="box">
     <!-- 头部 -->
     <div class="header-icon">
-      <i
-        @click="handleHeaderIcon"
-        :class="isStatus ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
-      ></i>
+      <div class="header-icon-children">
+        <!-- <i
+          @click="handleHeaderIcon"
+          :class="isStatus ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
+        ></i> -->
+        <i
+          @click="handleHeaderIcon"
+          :class="$store.getters.isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
+        ></i>
+        <!-- <el-button @click="handleCollapseMenu" size="mini" type="text" :icon="$store.getters.isCollapse ? 'el-icon-s-fold' : 'el-icon-s-unfold'"></el-button> -->
+      </div>
+      <div class="header-closable">
+        <Tags></Tags>
+        <!-- <el-tag type="warning" label="标签五" effect="plain" >
+          控制台
+        </el-tag>
+         <el-tag type="warning" label="标签五" effect="plain"  closable>
+          控制台
+        </el-tag> -->
+      </div>
+
       <!-- <i class="el-icon-s-fold"></i> -->
       <!-- <i class="el-icon-s-unfold" v-else></i> -->
     </div>
@@ -14,27 +31,24 @@
         <el-tooltip
           class="item"
           effect="dark"
-          :content="isIcon?'取消全屏':'开启全屏'"
+          :content="isIcon ? '取消全屏' : '开启全屏'"
           placement="top-start"
         >
-          <i class="el-icon-files icon right" @click="handleSubmitIcon"></i>
+          <i class="el-icon-rank icon right full" @click="handleSubmitIcon"></i>
         </el-tooltip>
       </div>
       <div>
-       <el-tooltip
+        <el-tooltip
           class="item"
           effect="dark"
           content="关闭全部标签"
           placement="top-start"
         >
-        <i class="el-icon-circle-close icon right" @click="handleCloseTab"></i>
+          <i class="el-icon-circle-close icon right" @click="handleCloseTab"></i>
         </el-tooltip>
       </div>
       <div>
-        <el-avatar
-          class="right"
-          :src="$store.getters.userInfo.avatar"
-        ></el-avatar>
+        <el-avatar class="right" :src="$store.getters.userInfo.avatar"></el-avatar>
       </div>
       <div class="userCommand right">
         <el-dropdown @command="handleCommand">
@@ -52,6 +66,7 @@
   </div>
 </template>
 <script>
+import Tags from '../../components/Tags'
 export default {
   props: {
     isStatus: {
@@ -59,26 +74,30 @@ export default {
       default: false
     }
   },
-  components: {},
-  data () {
+  components: { Tags },
+  data() {
     return {
       isIcon: false
     }
   },
-  created () {},
+  created() {},
   computed: {},
   methods: {
+    // 折叠菜单
+    handleHeaderIcon() {
+      this.$store.dispatch('menus/setCollapse')
+    },
     // 点击事件
-    handleCommand (command) {
+    handleCommand(command) {
       console.log(command)
       if (command === 'userOut') return this.handleUserOut()
     },
     // 点击退出登录
-    handleUserOut () {
+    handleUserOut() {
       this.handleDelete() //  删除提示
     },
     // 删除提示
-    handleDelete () {
+    handleDelete() {
       this.$confirm('是否确定退出登录', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -112,54 +131,60 @@ export default {
         })
     },
     // 退出登录
-    async logout () {
+    async logout() {
       const response = await this.$store.dispatch('user/getLogout')
       console.log('退出登录', response)
     },
     // 点击折叠按钮
-    handleHeaderIcon () {
-      // this.isStatus = !this.isStatus
-      this.$emit('handleUserIcon', this.isStatus)
-      console.log('header', this.isStatus)
-    },
+    // handleHeaderIcon() {
+    //   // this.isStatus = !this.isStatus
+    //   this.$emit('handleUserIcon', this.isStatus)
+    //   console.log('header', this.isStatus)
+    // },
     // 点击 全屏图标
-    handleSubmitIcon () {
+    handleSubmitIcon() {
       this.isIcon = !this.isIcon
       // 需要安装插件
       // console.log('全屏图标2', this.isIcon)
     },
     // 点击 删除所有tagview  关闭全部标签
-    handleCloseTab () {
-
-    }
-
+    handleCloseTab() {}
   },
-  mounted () {
-  }
+  mounted() {}
 }
 </script>
 
 <style lang="scss" scoped>
 .box {
-  width: 100%;
   align-items: center;
   display: flex;
   justify-content: space-between;
   color: #fff;
   .header-icon {
     font-size: 35px;
-    width: 25px;
     height: 25px;
     margin-top: -10px;
+    display: flex;
+    .header-icon-children {
+      margin-right: 10px;
+    }
+    .header-closable {
+      height: 20px;
+      line-height: 20px;
+      .el-tag {
+        cursor: pointer;
+        margin-left: 10px;
+      }
+    }
   }
   .header-right {
     height: 60px;
     display: flex;
     align-items: center;
     text-align: center;
-    .header-right-div{
+    .header-right-div {
       display: flex;
-     flex-direction:column;
+      flex-direction: column;
     }
     .el-dropdown-link {
       color: #fff;
@@ -180,5 +205,14 @@ export default {
       font-weight: 700;
     }
   }
+  .full {
+        margin-right: 20px;
+        // 旋转
+        transform: rotate(20deg);
+        -webkit-transform: rotate(20deg);
+        /*兼容-webkit-引擎浏览器*/
+        -moz-transform: rotate(20deg);
+        /*兼容-moz-引擎浏览器*/
+      }
 }
 </style>

@@ -43,9 +43,9 @@ const getMenuInfo = () => {
 
 // 菜单列表
 // GET /sys/menu/list
-const getMenuList = () => {
+const getMenuList = (data) => {
   return http({
-    url: '/menu/list',
+    url: `/menu/list?current=${data.current}&size=${data.size}&username=${data.username}`,
     method: 'GET'
   })
 }
@@ -75,5 +75,4 @@ export default {
   getMenuList,
   getMenuNav,
   getMenuupdate
-
 }

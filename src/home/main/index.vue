@@ -8,12 +8,12 @@
           separator-class="el-icon-arrow-right"
           class="main-header-left"
         >
-          <div v-if="$route.meta.title==='控制台'" >
-           <el-breadcrumb-item  class="mateTitle">{{ $route.meta.title }}</el-breadcrumb-item>
+          <div v-if="$route.meta.title==='控制台'"  class="mateTitle">
+           <el-breadcrumb-item  >{{ $route.meta.title }}</el-breadcrumb-item>
           </div>
           <div v-else>
-            <el-breadcrumb-item :to="{ path: '/sys' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item>系统管理</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/sys/users' }">系统管理</el-breadcrumb-item>
             <el-breadcrumb-item>{{ $route.meta.title }}</el-breadcrumb-item>
           </div>
         </el-breadcrumb>
@@ -62,7 +62,12 @@ export default {
     }
   }
   .mateTitle{
-    font-weight: 700;
+    :deep .el-breadcrumb__inner{
+        font-weight: 700;
+    color: #000;
+    }
+
   }
+
 }
 </style>

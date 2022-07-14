@@ -25,7 +25,7 @@ const getRoleAdd = () => {
 
 // 单个删除角色和批量删除
 // DELETE /sys/role/del
-const getRoleDel = () => {
+const getRoleDel = (id) => {
   return http({
     url: '/role/del',
     method: 'DELETE'
@@ -43,9 +43,9 @@ const getRoleInfo = () => {
 
 // 角色列表
 // GET /sys/role/list
-const getRoleList = () => {
+const getRoleList = (data) => {
   return http({
-    url: '/role/list',
+    url: `/role/list?current=${data.current}&size=${data.size}&name=${data.name}`,
     method: 'GET'
   })
 }
@@ -61,10 +61,11 @@ const getRolePerm = () => {
 
 // 更新角色
 // PUT /sys/role/update
-const getRleupdata = () => {
+const getRleupdata = (data) => {
   return http({
     url: '/role/update',
-    method: 'PUT'
+    method: 'PUT',
+    data
   })
 }
 
