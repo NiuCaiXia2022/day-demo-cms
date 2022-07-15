@@ -66,10 +66,20 @@
               type="warning"
               size="mini"
               @click="handleDistributionRoles(scope.row)"
+              :disabled="
+                scope.row.roles.length === 1 && scope.row.roles[0].code === 'admin'
+              "
             >
               分配角色
             </el-tag>
-            <el-tag type="danger" size="mini" @click="handleUserDelete(scope.row.id)">
+            <el-tag
+              type="danger"
+              size="mini"
+              @click="handleUserDelete(scope.row.id)"
+              :disabled="
+                scope.row.roles.length === 1 && scope.row.roles[0].code === 'admin'
+              "
+            >
               删除
             </el-tag>
           </template>
@@ -352,7 +362,7 @@ export default {
       this.ruleForm.roleId = []
       this.rolesDialogVisible = true // 关闭 弹框
       // 循环 row.roles   拿item.id  是角色的分配的权限 id(有的是一个有的是多个)
-      console.log(' 点击 分配角色', row.roles)
+      // console.log(' 点击 分配角色', row.roles)
       row.roles.forEach((item) => {
         this.ruleForm.roleId.push(item.id)
       })
