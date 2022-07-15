@@ -30,7 +30,7 @@
 
     <!-- 表格 -->
     <div class="user-table">
-      <el-table :data="userList.records" border style="width: 100%">
+      <el-table :data="userList" border style="width: 100%">
         <el-table-column type="index" width="50" label="序号"></el-table-column>
         <el-table-column prop="username" label="用户名"></el-table-column>
         <el-table-column prop="avatar" label="头像">
@@ -143,7 +143,7 @@
     </div>
 
     <!-- 分配角色  弹框-->
-    <el-dialog title="提示" :visible.sync="RolesDialogVisible" width="30%" center>
+    <el-dialog title="提示" :visible.sync="rolesDialogVisible" width="30%" center>
       <!-- 表单 -->
       <el-form
         :model="ruleForm"
@@ -152,25 +152,25 @@
         label-width="100px"
         class="demo-ruleForm"
       >
-        <el-form-item label="角色" prop="roles">
-          <el-select v-model="ruleForm.roles" placeholder="请选择角色">
+        <el-form-item label="角色" prop="roleId">
+          <el-select
+            style="width: 100%"
+            multiple
+            v-model="ruleForm.roleId"
+            placeholder="请选择角色"
+          >
             <el-option
-              v-for="item in ruleFormList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-              <el-tag type="info">{{ item }}</el-tag>
-            </el-option>
-            <el-option v-for="item in ruleFormList" :value="item" :key="item">
-              <el-tag type="info">{{ item }}</el-tag>
-            </el-option>
+              v-for="(item, index) in ruleFormList"
+              :key="index"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="RolesDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="eolesDialogVisible = false">确 定</el-button>
+        <el-button @click="rolesDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleUpRoles">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -206,11 +206,14 @@ export default {
         username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
-        roles: [{ required: true, message: '请输入角色', trigger: 'blur' }]
+        roleId: [{ required: true, message: '请输入角色', trigger: 'change' }]
       },
       // 分配角色  弹框
-      RolesDialogVisible: false, // 显示隐藏
-      ruleForm: {},
+      rolesDialogVisible: false, // 显示隐藏
+      ruleForm: {
+        roleId: []
+      },
+      roleId: '', // 保存id
       ruleFormList: [], // 分配角色 角色列表
       // 分页
       total: 0, // 总条数
@@ -233,7 +236,7 @@ export default {
       }
       const res = await Name.getUserList(data)
       // console.log('列表数据', res)
-      this.userList = res
+      this.userList = res.records
       this.total = res.total
     },
     // 角色列表
@@ -241,8 +244,8 @@ export default {
       try {
         const data = { current: this.current, size: this.size }
         const response = await Roles.getRoleList(data)
-        console.log('角色列表', response)
         this.ruleFormList = response.records
+        // console.log('角色列表', this.ruleFormList)
       } catch (e) {
         console.log(e)
       }
@@ -300,8 +303,6 @@ export default {
       // console.log('数据回填2', res)
       this.userDialogForm = res
     },
-    // 表格 状态按钮
-    hanldeUserStatus() {},
     // 确定
     handelDetermineForm() {
       this.$refs.userDialogForm.validate((valid) => {
@@ -344,9 +345,36 @@ export default {
         console.log(error)
       }
     },
-    // 确定 分配角色
-    handleDistributionRoles() {
-      this.RolesDialogVisible = true
+    // 点击 分配角色
+    handleDistributionRoles(row) {
+      // console.log(' 点击 分配角色', row)
+      // 表单的 默认为空
+      this.ruleForm.roleId = []
+      this.rolesDialogVisible = true // 关闭 弹框
+      // 循环 row.roles   拿item.id  是角色的分配的权限 id(有的是一个有的是多个)
+      console.log(' 点击 分配角色', row.roles)
+      row.roles.forEach((item) => {
+        this.ruleForm.roleId.push(item.id)
+      })
+      // 保存id
+      this.roleId = row.id
+      // console.log('点击 分配角色', this.ruleForm.roleId)
+    },
+    // 确定 角色
+    handleUpRoles() {
+      this.$refs.ruleForm.validate(async (valid) => {
+        if (valid) {
+          // console.log('确定 角色1', this.roleId)
+          // 调用接口  id  和 表单的数据
+          // const response = await Name.getUserAssign(this.roleId, this.ruleForm.roleId)
+          // console.log('确定 角色2', response)
+          await Name.getUserAssign(this.roleId, this.ruleForm.roleId)
+          this.rolesDialogVisible = false
+          this.$notify({ title: '提示', message: '更新成功', type: 'success' })
+          // 调用 列表数据接口
+          this.handleGetRoleList()
+        }
+      })
     }
   },
   mounted() {}
@@ -359,9 +387,6 @@ export default {
   height: 100%;
   margin-left: 20px;
   margin-top: 20px;
-  // .user-from {
-
-  // }
   .user-img {
     width: 40px;
     height: 40px;

@@ -42,11 +42,11 @@ const getRoleInfo = (id) => {
 }
 
 // 角色列表
-// GET /sys/role/list
 const getRoleList = (data) => {
   return http({
-    url: `/role/list?current=${data.current}&size=${data.size}&name=${data.name}`,
-    method: 'GET'
+    url: '/role/list',
+    method: 'GET',
+    data
   })
 }
 

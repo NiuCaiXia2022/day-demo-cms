@@ -26,12 +26,14 @@ const getUserAdd = (data) => {
   })
 }
 
+// user / assign / 2
 // 分配角色
 // POST /sys/user/assign/{userId}
-const getUserAssign = (id) => {
+const getUserAssign = (id, data) => {
   return http({
-    url: '/user/assign/{userId}',
-    method: 'POST'
+    url: `/user/assign/${id}`,
+    method: 'POST',
+    data
   })
 }
 
